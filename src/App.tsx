@@ -1,34 +1,51 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { MortgageCalculator } from './components/MortgageCalculator'
+import { Results } from './components/Results'
+import type { MortgageInputs, MortgageResult } from './utils/calculations'
+import { calculateMortgage } from './utils/calculations'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [results, setResults] = useState<MortgageResult | null>(null)
+
+  const handleCalculate = (inputs: MortgageInputs) => {
+    const calculatedResults = calculateMortgage(inputs)
+    setResults(calculatedResults)
+    
+    // Scroll to results
+    setTimeout(() => {
+      document.getElementById('results')?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }, 100)
+  }
+
+  const handleReset = () => {
+    setResults(null)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="app">
+      <MortgageCalculator onCalculate={handleCalculate} />
+      
+      {results && (
+        <div id="results">
+          <Results results={results} />
+          <div className="reset-section">
+            <button onClick={handleReset} className="reset-button">
+              חשב שוב עם נתונים אחרים
+            </button>
+          </div>
+        </div>
+      )}
+      
+      <footer className="app-footer">
+        <p>💼 יועץ משכנתאות מקצועי | רוטם</p>
+        <p className="footer-note">לייעוץ אישי חייגו: 050-1234567</p>
+      </footer>
+    </div>
   )
 }
 
