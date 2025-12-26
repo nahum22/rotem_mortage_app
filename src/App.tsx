@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import { MortgageCalculator } from './components/MortgageCalculator'
 import { Results } from './components/Results'
+import { PieComparison } from './components/PieComparison'
 import type { MortgageInputs, MortgageResult } from './utils/calculations'
 import { calculateMortgage } from './utils/calculations'
 
@@ -32,6 +33,9 @@ function App() {
       
       {results && (
         <div id="results">
+          
+          <PieComparison loanAmount={results.loanAmount} years={25} />
+          
           <Results results={results} />
           <div className="reset-section">
             <button onClick={handleReset} className="reset-button">
