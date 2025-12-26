@@ -103,3 +103,87 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResult {
     ]
   };
 }
+
+/**
+ * חישוב תמהיל משכנתא - 3 אופציות
+ */
+export interface MixOption {
+  id: 'stable' | 'balanced' | 'saving';
+  name: string;
+  icon: string;
+  monthlyPayment: number;
+  totalCost: number;
+  volatility: 'low' | 'medium' | 'high';
+  volatilityText: string;
+  description: string;
+  recommended?: boolean;
+}
+
+export function calculateMixOptions(loanAmount: number, years: number = 25): MixOption[] {
+  // אופציה 1: יציבות - 100% ריבית קבועה
+  const stableRate = 5.2; // ריבית קבועה גבוהה יותר
+  const stableMonthlyPayment = calculateMonthlyPayment(loanAmount, stableRate, years);
+  const stableTotalCost = stableMonthlyPayment * years * 12;
+
+  // אופציה 2: איזון - 60% קבועה, 40% משתנה/פריים
+  const balancedAverageRate = 4.3; // ממוצע משוקלל
+  const balancedMonthlyPayment = calculateMonthlyPayment(loanAmount, balancedAverageRate, years);
+  const balancedTotalCost = balancedMonthlyPayment * years * 12;
+
+  // אופציה 3: חיסכון - 30% קבועה, 70% משתנה/פריים
+  const savingAverageRate = 3.8; // ריבית נמוכה יותר אבל עם סיכון
+  const savingMonthlyPayment = calculateMonthlyPayment(loanAmount, savingAverageRate, years);
+  const savingTotalCost = savingMonthlyPayment * years * 12;
+
+  return [
+    {
+      id: 'stable',
+      name: 'אופציה 1 – יציבות',
+      icon: '🟦',
+      monthlyPayment: stableMonthlyPayment,
+      totalCost: Math.round(stableTotalCost),
+      volatility: 'low',
+      volatilityText: 'נמוכה',
+      description: 'מתאימה למי שמעדיף שקט נפשי ויודע בדיוק כמה ישלם כל חודש.',
+      recommended: false
+    },
+    {
+      id: 'balanced',
+      name: 'אופציה 2 – איזון',
+      icon: '🟨',
+      monthlyPayment: balancedMonthlyPayment,
+      totalCost: Math.round(balancedTotalCost),
+      volatility: 'medium',
+      volatilityText: 'בינונית',
+      description: 'שילוב חכם בין יציבות לחיסכון. המלצת המומחים לרוב המשפחות.',
+      recommended: true
+    },
+    {
+      id: 'saving',
+      name: 'אופציה 3 – חיסכון',
+      icon: '🟩',
+      monthlyPayment: savingMonthlyPayment,
+      totalCost: Math.round(savingTotalCost),
+      volatility: 'high',
+      volatilityText: 'גבוהה',
+      description: 'מיועד למי שיכול להכיל שינויים בהחזר החודשי ומחפש חיסכון מקסימלי.',
+      recommended: false
+    }
+  ];
+}
+
+/**
+ * חישוב חיסכון פוטנציאלי בין אופציות
+ */
+export function calculatePotentialSaving(
+  loanAmount: number,
+  selectedOption: 'stable' | 'balanced' | 'saving',
+  years: number = 25
+): number {
+  const options = calculateMixOptions(loanAmount, years);
+  const stableOption = options.find(o => o.id === 'stable')!;
+  const selectedOpt = options.find(o => o.id === selectedOption)!;
+  
+  // החיסכון הוא ההפרש בין האופציה היקרה ביותר (יציבות) לבין האופציה שנבחרה
+  return Math.round(stableOption.totalCost - selectedOpt.totalCost);
+}
