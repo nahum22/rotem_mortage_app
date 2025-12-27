@@ -85,7 +85,7 @@ const PieChart: React.FC<PieChartProps> = ({ principal, interest, title, subtitl
         {/* Interest slice */}
         <path
           d={createPieSlice(principalAngle, 360)}
-          fill="#FF6B6B"
+          fill="#E11B1B"
           className="pie-slice"
         />
       </svg>
@@ -195,20 +195,20 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
         <div className="insights-grid">
           <div className="insight-card">
             <div className="insight-icon">📊</div>
-            <div className="insight-title">עלות כוללת</div>
+            <div className="insight-title">חיסכון פוטנציאלי</div>
             <div className="insight-value">
               {(bankOffer.total - plannedMix.total).toLocaleString('he-IL')} ₪
             </div>
-            <div className="insight-label">חיסכון פוטנציאלי</div>
+            <div className="insight-label"> </div>
           </div>
           
           <div className="insight-card">
             <div className="insight-icon">💰</div>
-            <div className="insight-title">הפרש חודשי</div>
+            <div className="insight-title">פחות בכל חודש</div>
             <div className="insight-value">
               {(bankOffer.monthlyPayment - plannedMix.monthlyPayment).toLocaleString('he-IL')} ₪
             </div>
-            <div className="insight-label">פחות בכל חודש</div>
+            <div className="insight-label">  </div>
           </div>
           
           <div className="insight-card">
