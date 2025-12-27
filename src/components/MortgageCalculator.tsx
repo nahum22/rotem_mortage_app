@@ -11,6 +11,7 @@ export const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ onCalcul
   const [downPayment, setDownPayment] = useState<string>('');
   const [monthlyIncome, setMonthlyIncome] = useState<string>('');
   const [dealType, setDealType] = useState<'first' | 'upgrade' | 'investment'>('first');
+  const [propertyType, setPropertyType] = useState<'apartment' | 'landAndHouse' | 'land'>('apartment');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +20,8 @@ export const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ onCalcul
       propertyPrice: parseFloat(propertyPrice),
       downPayment: parseFloat(downPayment),
       monthlyIncome: parseFloat(monthlyIncome),
-      dealType
+      dealType,
+      propertyType
     };
     
     onCalculate(inputs);
@@ -48,9 +50,31 @@ export const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ onCalcul
 
       <form onSubmit={handleSubmit} className="calculator-form">
         <div className="form-group">
-          <label htmlFor="propertyPrice">
+          <label htmlFor="propertyType">
             <span className="label-icon">🏘️</span>
-            מחיר הנכס
+            סוג הנכס
+          </label>
+          <div className="input-wrapper">
+            <select
+              id="propertyType"
+              value={propertyType}
+              onChange={(e) => setPropertyType(e.target.value as 'apartment' | 'landAndHouse' | 'land')}
+              className="form-select"
+              required
+            >
+              <option value="apartment">דירה / דירה בבניין</option>
+              <option value="landAndHouse">מגרש + בית פרטי</option>
+              <option value="land">מגרש בלבד</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="propertyPrice">
+            <span className="label-icon">💰</span>
+            {propertyType === 'land' ? 'שווי המגרש' : 
+             propertyType === 'landAndHouse' ? 'שווי המגרש + הבית' : 
+             'שווי הנכס'}
           </label>
           <div className="input-wrapper">
             <input
@@ -67,8 +91,8 @@ export const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ onCalcul
 
         <div className="form-group">
           <label htmlFor="downPayment">
-            <span className="label-icon">💰</span>
-            הון עצמי
+            <span className="label-icon">💵</span>
+            מקדמה (הון עצמי)
             {downPaymentPercent !== '0' && (
               <span className="percent-badge">{downPaymentPercent}%</span>
             )}
@@ -88,8 +112,8 @@ export const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ onCalcul
 
         <div className="form-group">
           <label htmlFor="monthlyIncome">
-            <span className="label-icon">💵</span>
-            הכנסה חודשית משפחתית
+            <span className="label-icon">💼</span>
+            הכנסה משפחתית חודשית
           </label>
           <div className="input-wrapper">
             <input

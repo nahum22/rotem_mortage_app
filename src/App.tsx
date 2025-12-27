@@ -11,19 +11,29 @@ import { calculateMortgage, calculateMixOptions, calculatePotentialSaving } from
 function App() {
   const [results, setResults] = useState<MortgageResult | null>(null)
   const [selectedOption, setSelectedOption] = useState<'stable' | 'balanced' | 'saving' | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleCalculate = (inputs: MortgageInputs) => {
-    const calculatedResults = calculateMortgage(inputs)
-    setResults(calculatedResults)
-    setSelectedOption(null) // איפוס הבחירה בעת חישוב חדש
-    
-    // Scroll to results
-    setTimeout(() => {
-      document.getElementById('results')?.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      })
-    }, 100)
+  const handleCalculate = async (inputs: MortgageInputs) => {
+    setIsLoading(true)
+    setResults(null)
+    try {
+      const calculatedResults = await calculateMortgage(inputs)
+      setResults(calculatedResults)
+      setSelectedOption(null) // איפוס הבחירה בעת חישוב חדש
+      
+      // Scroll to results
+      setTimeout(() => {
+        document.getElementById('results')?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }, 100)
+    } catch (error) {
+      console.error('Calculation error:', error)
+      alert('אירעה שגיאה בחישוב. אנא נסה שוב.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleOptionSelect = (optionId: 'stable' | 'balanced' | 'saving') => {
@@ -61,7 +71,13 @@ function App() {
     <div className="app">
       <MortgageCalculator onCalculate={handleCalculate} />
       
-      {results && (
+      {isLoading && (
+        <div style={{ textAlign: 'center', padding: '40px', fontSize: '1.2rem' }}>
+          ⏳ מחשב את המשכנתא שלך...
+        </div>
+      )}
+      
+      {results && !isLoading && (
         <div id="results">
           <PieComparison loanAmount={results.loanAmount} years={25} />
           

@@ -3,6 +3,7 @@ export interface MortgageInputs {
   downPayment: number;
   monthlyIncome: number;
   dealType: 'first' | 'upgrade' | 'investment';
+  propertyType: 'apartment' | 'landAndHouse' | 'land';
 }
 
 export interface MortgageResult {
