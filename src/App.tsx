@@ -156,7 +156,7 @@ function App() {
       )}
       
       <footer className="app-footer">
-        <p>💼 יועצת משכנתאות מקצועית | רותם</p>
+        <p>💼 יועצת משכנתאות  | רותם נחום</p>
         <p className="footer-note">לייעוץ אישי חייגו: 050-4453366</p>
       </footer>
     </div>

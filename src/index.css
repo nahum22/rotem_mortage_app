@@ -9,6 +9,11 @@
   line-height: 1.6;
   font-weight: 400;
   
+  /* Color Variables */
+  --primary-color: #aeb0f3;;
+  --primary-dark: #3f429f;
+  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

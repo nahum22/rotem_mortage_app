@@ -24,12 +24,11 @@
 }
 
 .selected-option-text strong {
-  color: #667eea;
+  color: var(--primary-color);
   font-weight: 700;
 }
 
 .saving-highlight {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 50px 30px;
   border-radius: 25px;
   text-align: center;
@@ -60,7 +59,7 @@
 }
 
 .saving-label {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--primary-color);
   font-size: 1.3rem;
   margin-bottom: 15px;
   font-weight: 500;
@@ -69,7 +68,7 @@
 }
 
 .saving-amount {
-  color: white;
+  color: var(--primary-color);
   font-size: 4rem;
   font-weight: 900;
   margin: 20px 0;
@@ -77,6 +76,16 @@
   position: relative;
   z-index: 1;
   line-height: 1;
+  animation: gentlePulse 2.5s ease-in-out infinite;
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 .saving-subtitle {
@@ -259,7 +268,7 @@
 }
 
 .contact-link.phone {
-  background: #4CAF50;
+  background-color: #7f8c8d;
   color: white;
 }
 

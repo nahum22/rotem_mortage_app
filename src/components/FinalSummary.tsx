@@ -38,7 +38,7 @@ export const FinalSummary: React.FC<FinalSummaryProps> = ({
       </div>
 
       <div className="explanation-section">
-        <h3>🎯 הפער הזה נוצר לא בגלל "ריבית סודית"</h3>
+        <h3> הפער הזה נוצר לא בגלל "ריבית סודית"</h3>
         <div className="explanation-points">
           <div className="point">
             <span className="point-icon">📊</span>
@@ -66,19 +66,9 @@ export const FinalSummary: React.FC<FinalSummaryProps> = ({
         </div>
       </div>
 
-      <div className="key-message">
-        <div className="key-message-content">
-          <span className="quote-icon">💬</span>
-          <p className="key-text">
-            משכנתא לא מתכננים לפי טופס –<br />
-            <strong>אלא לפי אנשים.</strong>
-          </p>
-        </div>
-      </div>
-
       <div className="cta-section">
         <button className="cta-button" onClick={onConsultation}>
-          ⬇️ להמשך ליווי ובניית תמהיל מלא
+          ⬇️ להמשך תהליך
         </button>
         <p className="disclaimer-text">
           * הבדיקה הראשונית אינה מחייבת
@@ -88,13 +78,13 @@ export const FinalSummary: React.FC<FinalSummaryProps> = ({
       <div className="contact-section">
         <div className="contact-card">
           <h4>📞 צור קשר עכשיו</h4>
-          <p className="contact-name">רוטם - יועץ משכנתאות מוסמך</p>
+          <p className="contact-name"> רותם נחום - יועצת משכנתאות </p>
           <div className="contact-methods">
-            <a href="tel:0501234567" className="contact-link phone">
-              📱 050-1234567
+            <a href="tel:0504453366" className="contact-link phone">
+              📱 050-4453366
             </a>
             <a href="mailto:rotem@example.com" className="contact-link email">
-              ✉️ rotem@example.com
+              ✉️ rotem1.shalem@gmail.com
             </a>
             <a href="https://wa.me/9720501234567" className="contact-link whatsapp" target="_blank" rel="noopener noreferrer">
               💬 שלח הודעת WhatsApp
@@ -104,7 +94,7 @@ export const FinalSummary: React.FC<FinalSummaryProps> = ({
       </div>
 
       <div className="trust-section">
-        <h4>למה לבחור בנו?</h4>
+        <h4>למה לבחור בי?</h4>
         <div className="trust-points">
           <div className="trust-point">
             <span>✓</span>

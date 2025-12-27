@@ -23,7 +23,7 @@
 }
 
 .result-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   padding: 1.5rem;
   border-radius: 12px;
   text-align: center;

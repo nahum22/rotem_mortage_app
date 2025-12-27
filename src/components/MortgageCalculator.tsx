@@ -44,8 +44,8 @@ export const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ onCalcul
   return (
     <div className="calculator-container">
       <div className="calculator-header">
-        <h1>🏠 כלי אבחון משכנתא</h1>
-        <p className="subtitle">קבל תשובות ראשוניות תוך דקה אחת</p>
+        <h1>רותם נחום ייעוץ משכנתאות</h1>
+        <p className="subtitle">הכוונה מקצועית מקדימה </p>
       </div>
 
       <form onSubmit={handleSubmit} className="calculator-form">
