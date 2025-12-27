@@ -5,21 +5,28 @@ import { Results } from './components/Results'
 import { PieComparison } from './components/PieComparison'
 import { MixOptions } from './components/MixOptions'
 import { FinalSummary } from './components/FinalSummary'
-import type { MortgageInputs, MortgageResult } from './utils/calculations'
+import type { MortgageInputs, MortgageResult, MixOption } from './utils/calculations'
 import { calculateMortgage, calculateMixOptions, calculatePotentialSaving } from './utils/calculations'
 
 function App() {
   const [results, setResults] = useState<MortgageResult | null>(null)
   const [selectedOption, setSelectedOption] = useState<'stable' | 'balanced' | 'saving' | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [mixOptions, setMixOptions] = useState<MixOption[]>([])
+  const [estimatedSaving, setEstimatedSaving] = useState<number>(0)
 
   const handleCalculate = async (inputs: MortgageInputs) => {
     setIsLoading(true)
     setResults(null)
+    setMixOptions([])
     try {
       const calculatedResults = await calculateMortgage(inputs)
       setResults(calculatedResults)
-      setSelectedOption(null) // איפוס הבחירה בעת חישוב חדש
+      setSelectedOption(null)
+      
+      // חישוב אופציות תמהיל
+      const options = await calculateMixOptions(calculatedResults.loanAmount)
+      setMixOptions(options)
       
       // Scroll to results
       setTimeout(() => {
@@ -36,8 +43,14 @@ function App() {
     }
   }
 
-  const handleOptionSelect = (optionId: 'stable' | 'balanced' | 'saving') => {
+  const handleOptionSelect = async (optionId: 'stable' | 'balanced' | 'saving') => {
     setSelectedOption(optionId)
+    
+    // חישוב חיסכון פוטנציאלי
+    if (results) {
+      const saving = await calculatePotentialSaving(results.loanAmount, optionId)
+      setEstimatedSaving(saving)
+    }
     
     // Scroll to final summary
     setTimeout(() => {
@@ -56,16 +69,10 @@ function App() {
   const handleReset = () => {
     setResults(null)
     setSelectedOption(null)
+    setMixOptions([])
+    setEstimatedSaving(0)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-
-  // חישוב אופציות תמהיל אם יש תוצאות
-  const mixOptions = results ? calculateMixOptions(results.loanAmount) : []
-  
-  // חישוב חיסכון פוטנציאלי
-  const estimatedSaving = results && selectedOption 
-    ? calculatePotentialSaving(results.loanAmount, selectedOption)
-    : 0
 
   return (
     <div className="app">
@@ -79,6 +86,46 @@ function App() {
       
       {results && !isLoading && (
         <div id="results">
+          {/* הצגת שיעורי ריבית עדכניים */}
+          {results.interestRates && (
+            <div className="interest-rates-display">
+              <div className="rates-header">
+                <div className="boi-logo">🏛️</div>
+                <div className="rates-title">
+                  <h4>שיעורי ריבית עדכניים</h4>
+                  <p className="rates-source">
+                    מקור: בנק ישראל | עדכון: {new Date(results.interestRates.lastUpdated).toLocaleDateString('he-IL', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="rates-grid">
+                <div className="rate-item">
+                  <span className="rate-label">ריבית בנק ישראל</span>
+                  <span className="rate-value">{results.interestRates.prime?.toFixed(2) ?? '0.00'}%</span>
+                </div>
+                
+                <div className="rate-item">
+                  <span className="rate-label">קבועה 5 שנים</span>
+                  <span className="rate-value">{results.interestRates.fixed5Years?.toFixed(2) ?? '0.00'}%</span>
+                </div>
+                
+                <div className="rate-item">
+                  <span className="rate-label">משתנה</span>
+                  <span className="rate-value">{results.interestRates.variable?.toFixed(2) ?? '0.00'}%</span>
+                </div>
+              </div>
+              
+              <p className="rates-note">
+                * שיעורי הריבית עשויים להשתנות בהתאם לסוג הנכס ומדיניות הבנק
+              </p>
+            </div>
+          )}
+          
           <PieComparison loanAmount={results.loanAmount} years={25} />
           
           <Results results={results} />

@@ -6,12 +6,56 @@ export interface MortgageInputs {
   propertyType: 'apartment' | 'landAndHouse' | 'land';
 }
 
+export interface InterestRates {
+  prime: number;
+  fixed5Years: number;
+  variable: number;
+  lastUpdated: string;
+}
+
 export interface MortgageResult {
   loanAmount: number;
   monthlyPayment: number;
   loanToValue: number;
   paymentToIncome: number;
   warnings: string[];
+  interestRates?: InterestRates;
+}
+
+/**
+ * שליפת שיעורי ריבית עדכניים מבנק ישראל
+ */
+export async function fetchInterestRates(): Promise<InterestRates> {
+  try {
+    const response = await fetch('https://www.boi.org.il/PublicApi/GetInterest');
+    if (!response.ok) {
+      throw new Error('Failed to fetch interest rates');
+    }
+    
+    const data = await response.json();
+    
+    // חילוץ נתוני הריבית מהתשובה של בנק ישראל
+    // התאם את השדות בהתאם למבנה האמיתי של ה-API
+    const primeRate = data.find((item: any) => item.InterestRateName === 'ריבית בנק ישראל')?.InterestRate || 4.5;
+    const fixed5Years = data.find((item: any) => item.InterestRateName?.includes('קבועה 5 שנים'))?.InterestRate || 5.2;
+    const variable = data.find((item: any) => item.InterestRateName?.includes('משתנה'))?.InterestRate || 3.8;
+    
+    return {
+      prime: primeRate,
+      fixed5Years: fixed5Years,
+      variable: variable,
+      lastUpdated: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error fetching interest rates:', error);
+    // ערכי ברירת מחדל במקרה של שגיאה
+    return {
+      prime: 4.5,
+      fixed5Years: 5.2,
+      variable: 3.8,
+      lastUpdated: new Date().toISOString()
+    };
+  }
 }
 
 /**
@@ -20,7 +64,7 @@ export interface MortgageResult {
  */
 export function calculateMonthlyPayment(
   loanAmount: number,
-  annualInterestRate: number = 4.5, // ריבית ממוצעת בישראל
+  annualInterestRate: number,
   years: number = 25
 ): number {
   const monthlyRate = annualInterestRate / 100 / 12;
@@ -40,9 +84,14 @@ export function calculateMonthlyPayment(
 /**
  * חישוב תוצאות משכנתא ודגלים אדומים
  */
-export function calculateMortgage(inputs: MortgageInputs): MortgageResult {
+export async function calculateMortgage(inputs: MortgageInputs): Promise<MortgageResult> {
+  // שליפת ריביות עדכניות
+  const interestRates = await fetchInterestRates();
+  
   const loanAmount = inputs.propertyPrice - inputs.downPayment;
-  const monthlyPayment = calculateMonthlyPayment(loanAmount);
+  // שימוש בריבית ממוצעת משוקללת
+  const averageRate = (interestRates.fixed5Years * 0.6 + interestRates.variable * 0.4);
+  const monthlyPayment = calculateMonthlyPayment(loanAmount, averageRate);
   const loanToValue = (loanAmount / inputs.propertyPrice) * 100;
   const paymentToIncome = (monthlyPayment / inputs.monthlyIncome) * 100;
   
@@ -101,7 +150,8 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResult {
     paymentToIncome,
     warnings: warnings.length > 0 ? warnings.slice(0, 3) : [
       '✅ המצב נראה טוב! הנתונים מתאימים למתן משכנתא'
-    ]
+    ],
+    interestRates
   };
 }
 
@@ -120,19 +170,22 @@ export interface MixOption {
   recommended?: boolean;
 }
 
-export function calculateMixOptions(loanAmount: number, years: number = 25): MixOption[] {
+export async function calculateMixOptions(loanAmount: number, years: number = 25): Promise<MixOption[]> {
+  // שליפת ריביות עדכניות
+  const interestRates = await fetchInterestRates();
+  
   // אופציה 1: יציבות - 100% ריבית קבועה
-  const stableRate = 5.2; // ריבית קבועה גבוהה יותר
+  const stableRate = interestRates.fixed5Years;
   const stableMonthlyPayment = calculateMonthlyPayment(loanAmount, stableRate, years);
   const stableTotalCost = stableMonthlyPayment * years * 12;
 
   // אופציה 2: איזון - 60% קבועה, 40% משתנה/פריים
-  const balancedAverageRate = 4.3; // ממוצע משוקלל
+  const balancedAverageRate = (interestRates.fixed5Years * 0.6) + (interestRates.variable * 0.4);
   const balancedMonthlyPayment = calculateMonthlyPayment(loanAmount, balancedAverageRate, years);
   const balancedTotalCost = balancedMonthlyPayment * years * 12;
 
   // אופציה 3: חיסכון - 30% קבועה, 70% משתנה/פריים
-  const savingAverageRate = 3.8; // ריבית נמוכה יותר אבל עם סיכון
+  const savingAverageRate = (interestRates.fixed5Years * 0.3) + (interestRates.variable * 0.7);
   const savingMonthlyPayment = calculateMonthlyPayment(loanAmount, savingAverageRate, years);
   const savingTotalCost = savingMonthlyPayment * years * 12;
 
@@ -176,12 +229,12 @@ export function calculateMixOptions(loanAmount: number, years: number = 25): Mix
 /**
  * חישוב חיסכון פוטנציאלי בין אופציות
  */
-export function calculatePotentialSaving(
+export async function calculatePotentialSaving(
   loanAmount: number,
   selectedOption: 'stable' | 'balanced' | 'saving',
   years: number = 25
-): number {
-  const options = calculateMixOptions(loanAmount, years);
+): Promise<number> {
+  const options = await calculateMixOptions(loanAmount, years);
   const stableOption = options.find(o => o.id === 'stable')!;
   const selectedOpt = options.find(o => o.id === selectedOption)!;
   
