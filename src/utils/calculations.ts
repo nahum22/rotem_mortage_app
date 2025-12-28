@@ -168,6 +168,12 @@ export interface MixOption {
   volatilityText: string;
   description: string;
   recommended?: boolean;
+  composition: {
+    fixed: number;      // אחוז ריבית קבועה
+    variable: number;   // אחוז ריבית משתנה
+    prime: number;      // אחוז פריים
+  };
+  vsBank: string;      // הסבר ההבדל מהתמהיל הגנרי של הבנק
 }
 
 export async function calculateMixOptions(loanAmount: number, years: number = 25): Promise<MixOption[]> {
@@ -199,7 +205,13 @@ export async function calculateMixOptions(loanAmount: number, years: number = 25
       volatility: 'low',
       volatilityText: 'נמוכה',
       description: 'מתאימה למי שמעדיף שקט נפשי ויודע בדיוק כמה ישלם כל חודש.',
-      recommended: false
+      recommended: false,
+      composition: {
+        fixed: 100,
+        variable: 0,
+        prime: 0
+      },
+      vsBank: 'בניגוד לתמהיל הסטנדרטי של הבנק (80% קבועה + 20% פריים), כאן אין חשיפה בכלל לתנודות ריבית'
     },
     {
       id: 'balanced',
@@ -210,7 +222,13 @@ export async function calculateMixOptions(loanAmount: number, years: number = 25
       volatility: 'medium',
       volatilityText: 'בינונית',
       description: 'שילוב חכם בין יציבות לחיסכון. המלצת המומחים לרוב המשפחות.',
-      recommended: true
+      recommended: true,
+      composition: {
+        fixed: 40,
+        variable: 30,
+        prime: 30
+      },
+      vsBank: 'תמהיל מותאם אישית לעומת תמהיל הבנק הגנרי - פיזור חכם יותר בין מסלולי הריבית לחיסכון אופטימלי'
     },
     {
       id: 'saving',
@@ -221,7 +239,13 @@ export async function calculateMixOptions(loanAmount: number, years: number = 25
       volatility: 'high',
       volatilityText: 'גבוהה',
       description: 'מיועד למי שיכול להכיל שינויים בהחזר החודשי ומחפש חיסכון מקסימלי.',
-      recommended: false
+      recommended: false,
+      composition: {
+        fixed: 20,
+        variable: 40,
+        prime: 40
+      },
+      vsBank: 'חשיפה גבוהה יותר למסלולים משתנים לעומת תמהיל הבנק - פוטנציאל חיסכון משמעותי בתקופות ריבית נמוכה'
     }
   ];
 }

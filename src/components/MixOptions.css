@@ -125,6 +125,80 @@
   font-size: 1rem;
 }
 
+.composition-section {
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 2px solid #dee2e6;
+}
+
+.composition-title {
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+.composition-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.composition-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.composition-bar-wrapper {
+  flex: 1;
+  height: 32px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.composition-bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: white;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.composition-bar.fixed {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+}
+
+.composition-bar.variable {
+  background: linear-gradient(135deg, #7ed321 0%, #5fa617 100%);
+}
+
+.composition-bar.prime {
+  background: linear-gradient(135deg, #f5a623 0%, #d68910 100%);
+}
+
+.bar-label {
+  font-size: 0.85rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.composition-label {
+  min-width: 100px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+  text-align: left;
+}
+
 .option-description {
   margin: 20px 0;
   padding: 15px;
@@ -134,6 +208,39 @@
   font-size: 0.95rem;
   line-height: 1.6;
   text-align: center;
+}
+
+.vs-bank-section {
+  margin: 15px 0 0 0;
+  padding: 15px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border-radius: 12px;
+  border-right: 4px solid #f5a623;
+}
+
+.vs-bank-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vs-bank-icon {
+  font-size: 1.2rem;
+}
+
+.vs-bank-title {
+  font-weight: 700;
+  color: #856404;
+  font-size: 0.95rem;
+}
+
+.vs-bank-text {
+  margin: 0;
+  color: #856404;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: right;
 }
 
 .select-button {

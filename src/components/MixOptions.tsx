@@ -11,6 +11,12 @@ export interface MixOption {
   volatilityText: string;
   description: string;
   recommended?: boolean;
+  composition: {
+    fixed: number;
+    variable: number;
+    prime: number;
+  };
+  vsBank: string;
 }
 
 interface MixOptionsProps {
@@ -79,7 +85,60 @@ export const MixOptions: React.FC<MixOptionsProps> = ({ options, onSelect }) => 
               </div>
             </div>
 
+            <div className="composition-section">
+              <h4 className="composition-title">📊 הרכב התמהיל</h4>
+              <div className="composition-bars">
+                {option.composition.fixed > 0 && (
+                  <div className="composition-item">
+                    <div className="composition-bar-wrapper">
+                      <div 
+                        className="composition-bar fixed"
+                        style={{ width: `${option.composition.fixed}%` }}
+                      >
+                        <span className="bar-label">{option.composition.fixed}%</span>
+                      </div>
+                    </div>
+                    <span className="composition-label">ריבית קבועה</span>
+                  </div>
+                )}
+                {option.composition.variable > 0 && (
+                  <div className="composition-item">
+                    <div className="composition-bar-wrapper">
+                      <div 
+                        className="composition-bar variable"
+                        style={{ width: `${option.composition.variable}%` }}
+                      >
+                        <span className="bar-label">{option.composition.variable}%</span>
+                      </div>
+                    </div>
+                    <span className="composition-label">ריבית משתנה</span>
+                  </div>
+                )}
+                {option.composition.prime > 0 && (
+                  <div className="composition-item">
+                    <div className="composition-bar-wrapper">
+                      <div 
+                        className="composition-bar prime"
+                        style={{ width: `${option.composition.prime}%` }}
+                      >
+                        <span className="bar-label">{option.composition.prime}%</span>
+                      </div>
+                    </div>
+                    <span className="composition-label">פריים</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <p className="option-description">{option.description}</p>
+            
+            <div className="vs-bank-section">
+              <div className="vs-bank-header">
+                <span className="vs-bank-icon">🆚</span>
+                <span className="vs-bank-title">לעומת תמהיל הבנק:</span>
+              </div>
+              <p className="vs-bank-text">{option.vsBank}</p>
+            </div>
 
             <button
               className="select-button"
@@ -99,6 +158,10 @@ export const MixOptions: React.FC<MixOptionsProps> = ({ options, onSelect }) => 
         <p className="info-text">
           💡 <strong>טיפ:</strong> אופציית האיזון משלבת יציבות עם חיסכון פוטנציאלי,
           ומתאימה לרוב המשפחות בישראל.
+        </p>
+        <p className="info-text" style={{ marginTop: '15px' }}>
+          🏦 <strong>הבדל מהבנק:</strong> בניגוד לתמהיל הסטנדרטי של הבנקים (בדרך כלל 80% קבועה + 20% פריים),
+          התמהילים שלנו מותאמים אישית למצבך הפיננסי ולמגמות השוק הנוכחיות - לחיסכון מקסימלי.
         </p>
       </div>
     </div>
