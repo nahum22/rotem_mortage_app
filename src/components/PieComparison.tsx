@@ -121,11 +121,11 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
   loanAmount, 
   years = 25 
 }) => {
-  // הצעת בנק ממוצעת - ריבית גבוהה יותר
-  const bankOffer = calculateLoanBreakdown(loanAmount, 5.2, years);
+  // הצעת בנק טיפוסית - 80% קבועה (5.2%) + 20% פריים (4.5%) = 5.06%
+  const bankOffer = calculateLoanBreakdown(loanAmount, 5.06, years);
   
-  // תמהיל מתוכנן - שילוב של מסלולים בריבית ממוצעת נמוכה יותר
-  const plannedMix = calculateLoanBreakdown(loanAmount, 3.8, years);
+  // תמהיל מתוכנן מאוזן - 40% קבועה (5.2%) + 40% פריים (4.5%) + 20% משתנה (3.8%) = 4.64%
+  const plannedMix = calculateLoanBreakdown(loanAmount, 4.64, years);
   
   const savings = bankOffer.total - plannedMix.total;
   const savingsPercent = (savings / bankOffer.total) * 100;
@@ -145,8 +145,8 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
           <PieChart
             principal={bankOffer.principal}
             interest={bankOffer.interest}
-            title="הצעת בנק ממוצעת"
-            subtitle="ריבית 5.2% ממוצעת"
+            title="הצעת בנק טיפוסית"
+            subtitle="תמהיל סטנדרטי - ריבית 5.06%"
           />
           <div className="monthly-note">
             החזר חודשי: {bankOffer.monthlyPayment.toLocaleString('he-IL')} ₪
@@ -166,8 +166,8 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
           <PieChart
             principal={plannedMix.principal}
             interest={plannedMix.interest}
-            title="תמהיל מתוכנן"
-            subtitle="ריבית 3.8% ממוצעת"
+            title="תמהיל מתוכנן ומאוזן"
+            subtitle="שילוב חכם - ריבית 4.64%"
           />
           <div className="monthly-note">
             החזר חודשי: {plannedMix.monthlyPayment.toLocaleString('he-IL')} ₪
