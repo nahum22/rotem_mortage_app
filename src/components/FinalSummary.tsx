@@ -20,16 +20,40 @@ export const FinalSummary: React.FC<FinalSummaryProps> = ({
     }
   };
 
+  const getOptionIcon = () => {
+    switch (selectedOption) {
+      case 'stable': return '🟦';
+      case 'balanced': return '🟨';
+      case 'saving': return '🟩';
+    }
+  };
+
+  const getOptionColor = () => {
+    switch (selectedOption) {
+      case 'stable': return '#4a90e2';
+      case 'balanced': return '#f5a623';
+      case 'saving': return '#7ed321';
+    }
+  };
+
+  const getGradient = () => {
+    switch (selectedOption) {
+      case 'stable': return 'linear-gradient(135deg, #4a90e2 0%, #357abd 100%)';
+      case 'balanced': return 'linear-gradient(135deg, #f5a623 0%, #d68910 100%)';
+      case 'saving': return 'linear-gradient(135deg, #7ed321 0%, #5fa617 100%)';
+    }
+  };
+
   return (
     <div className="final-summary-container">
       <div className="summary-header">
         <h2>✨ מה המשמעות בפועל?</h2>
         <p className="selected-option-text">
-          בחרת באופציית: <strong>{getOptionName()}</strong>
+          בחרת באופציית: <strong style={{ color: getOptionColor() }}>{getOptionIcon()} {getOptionName()}</strong>
         </p>
       </div>
 
-      <div className="saving-highlight">
+      <div className="saving-highlight" style={{ background: getGradient() }}>
         <div className="saving-label">חיסכון פוטנציאלי משוער</div>
         <div className="saving-amount">
           ₪{estimatedSaving.toLocaleString('he-IL')}
