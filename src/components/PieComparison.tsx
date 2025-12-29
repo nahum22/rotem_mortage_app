@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchInterestRates, type InterestRates } from '../utils/calculations';
 import './PieComparison.css';
 
 interface PieComparisonProps {
@@ -121,11 +122,33 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
   loanAmount, 
   years = 25 
 }) => {
-  // הצעת בנק טיפוסית - 80% קבועה (5.2%) + 20% פריים (4.5%) = 5.06%
-  const bankOffer = calculateLoanBreakdown(loanAmount, 5.06, years);
+  const [interestRates, setInterestRates] = useState<InterestRates | null>(null);
   
-  // תמהיל מתוכנן מאוזן - 40% קבועה (5.2%) + 40% פריים (4.5%) + 20% משתנה (3.8%) = 4.64%
-  const plannedMix = calculateLoanBreakdown(loanAmount, 4.64, years);
+  useEffect(() => {
+    const loadRates = async () => {
+      const rates = await fetchInterestRates();
+      setInterestRates(rates);
+    };
+    loadRates();
+  }, []);
+  
+  if (!interestRates) {
+    return (
+      <div className="pie-comparison-container">
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          ⏳ טוען נתוני ריבית...
+        </div>
+      </div>
+    );
+  }
+  
+  // הצעת בנק טיפוסית - 80% קבועה + 20% פריים
+  const bankOfferRate = (interestRates.fixed5Years * 0.8) + (interestRates.prime * 0.2);
+  const bankOffer = calculateLoanBreakdown(loanAmount, bankOfferRate, years);
+  
+  // תמהיל מתוכנן מאוזן - 40% קבועה + 40% פריים + 20% משתנה
+  const plannedMixRate = (interestRates.fixed5Years * 0.4) + (interestRates.prime * 0.4) + (interestRates.variable * 0.2);
+  const plannedMix = calculateLoanBreakdown(loanAmount, plannedMixRate, years);
   
   const savings = bankOffer.total - plannedMix.total;
   const savingsPercent = (savings / bankOffer.total) * 100;
@@ -139,6 +162,33 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
         </p>
       </div>
       
+      {/* הסבר מושגי בסיס */}
+      <div className="terms-explainer">
+        <div className="explainer-card">
+          <div className="explainer-icon">🏦</div>
+          <div className="explainer-content">
+            <h4>מה זה קרן?</h4>
+            <p>
+              <strong>הקרן = סכום ההלוואה עצמו</strong><br />
+              למשל: אם קניתם דירה ב-1.5M ₪ עם מקדמה של 400K ₪,
+              הקרן היא 1.1M ₪ - זה הכסף שלוויתם מהבנק.
+            </p>
+          </div>
+        </div>
+        
+        <div className="explainer-card">
+          <div className="explainer-icon">📈</div>
+          <div className="explainer-content">
+            <h4>מה זאת ריבית?</h4>
+            <p>
+              <strong>הריבית = "השכר" שהבנק גובה על ההלוואה</strong><br />
+              זה הכסף הנוסף שתשלמו מעבר להלוואה עצמה.
+              <span style={{ color: '#E11B1B', fontWeight: 700 }}> במשכנתא רגילה, הריבית יכולה להיות כמעט כמו הקרן!</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      
       <div className="pies-grid">
         <div className="pie-wrapper left">
           <div className="pie-icon">👈</div>
@@ -146,7 +196,7 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
             principal={bankOffer.principal}
             interest={bankOffer.interest}
             title="הצעת בנק טיפוסית"
-            subtitle="תמהיל סטנדרטי - ריבית 5.06%"
+            subtitle={`תמהיל סטנדרטי - ריבית ${bankOfferRate.toFixed(2)}%`}
           />
           <div className="monthly-note">
             החזר חודשי: {bankOffer.monthlyPayment.toLocaleString('he-IL')} ₪
@@ -167,7 +217,7 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
             principal={plannedMix.principal}
             interest={plannedMix.interest}
             title="תמהיל מתוכנן ומאוזן"
-            subtitle="שילוב חכם - ריבית 4.64%"
+            subtitle={`שילוב חכם - ריבית ${plannedMixRate.toFixed(2)}%`}
           />
           <div className="monthly-note">
             החזר חודשי: {plannedMix.monthlyPayment.toLocaleString('he-IL')} ₪
@@ -181,11 +231,11 @@ export const PieComparison: React.FC<PieComparisonProps> = ({
           <h3>למה זה משנה?</h3>
           <p>
             <strong>רוב הבנקים מתמקדים בהחזר החודשי.</strong><br />
-            אנחנו מסתכלים על העלות הכוללת לאורך השנים.
+            אנחנו מסתכלים על העלות הכוללת לאורך השנים - כמה תשלמו בסך הכל (קרן + ריבית).
           </p>
           <p>
             תמהיל מתוכנן משלב מסלולים שונים (קבועה, משתנה, פריים) 
-            בצורה חכמה שמפחיתה את העלות הכוללת שלך ב-<strong>{savingsPercent.toFixed(0)}%</strong>
+            בצורה חכמה ש<strong>מפחיתה את הריבית</strong> שתשלמו ב-<strong>{savingsPercent.toFixed(0)}%</strong>
           </p>
         </div>
       </div>

@@ -251,17 +251,22 @@ export async function calculateMixOptions(loanAmount: number, years: number = 25
 }
 
 /**
- * חישוב חיסכון פוטנציאלי בין אופציות
+ * חישוב חיסכון פוטנציאלי לעומת הצעת בנק טיפוסית (80% קבועה + 20% פריים)
  */
 export async function calculatePotentialSaving(
   loanAmount: number,
   selectedOption: 'stable' | 'balanced' | 'saving',
   years: number = 25
 ): Promise<number> {
+  const interestRates = await fetchInterestRates();
   const options = await calculateMixOptions(loanAmount, years);
-  const stableOption = options.find(o => o.id === 'stable')!;
   const selectedOpt = options.find(o => o.id === selectedOption)!;
   
-  // החיסכון הוא ההפרש בין האופציה היקרה ביותר (יציבות) לבין האופציה שנבחרה
-  return Math.round(stableOption.totalCost - selectedOpt.totalCost);
+  // חישוב תמהיל בנק טיפוסי: 80% קבועה + 20% פריים
+  const typicalBankRate = (interestRates.fixed5Years * 0.8) + (interestRates.prime * 0.2);
+  const typicalBankMonthlyPayment = calculateMonthlyPayment(loanAmount, typicalBankRate, years);
+  const typicalBankTotalCost = typicalBankMonthlyPayment * years * 12;
+  
+  // החיסכון הוא ההפרש בין הצעת הבנק הטיפוסית לבין האופציה שנבחרה
+  return Math.round(typicalBankTotalCost - selectedOpt.totalCost);
 }
