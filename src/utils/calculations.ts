@@ -27,10 +27,9 @@ export interface MortgageResult {
  */
 export async function fetchInterestRates(): Promise<InterestRates> {
   try {
-    // שימוש ב-Netlify Function במקום קריאה ישירה
-    const apiUrl = '/.netlify/functions/interest-rates';
+    // קריאה ישירה ל-API של בנק ישראל
+    const response = await fetch('https://www.boi.org.il/PublicApi/GetInterest');
     
-    const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error('Failed to fetch interest rates');
     }
