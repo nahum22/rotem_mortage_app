@@ -1,18 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api/interest-rates': {
-        target: 'https://www.boi.org.il/PublicApi/GetInterest',
+      '/api': {
+        target: 'https://www.boi.org.il',
         changeOrigin: true,
-        rewrite: (path) => '',
-        configure: (proxy, options) => {
-          proxy.on('proxyRes', (proxyRes, req, res) => {
-            proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+        rewrite: (_path) => '/PublicApi/GetInterest',
+        configure: (_proxy, _options) => {
+          _proxy.on('proxyReq', (_proxyReq, _req, _res) => {
+            console.log('Proxying request to Bank of Israel API');
           });
         }
       }
