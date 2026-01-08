@@ -27,10 +27,8 @@ export interface MortgageResult {
  */
 export async function fetchInterestRates(): Promise<InterestRates> {
   try {
-    // בפרודקשן - Netlify Function, בפיתוח - Vite proxy
-    const apiUrl = import.meta.env.PROD 
-      ? '/.netlify/functions/interest-rates'
-      : '/api/interest-rates';
+    // שימוש ב-Netlify Function במקום קריאה ישירה
+    const apiUrl = '/.netlify/functions/interest-rates';
     
     const response = await fetch(apiUrl);
     if (!response.ok) {
@@ -40,8 +38,6 @@ export async function fetchInterestRates(): Promise<InterestRates> {
     const data = await response.json();
     
     console.log('📊 Full API Response:', data);
-    console.log('📊 Type:', typeof data);
-    console.log('📊 Is Array:', Array.isArray(data));
     
     // אם זה אובייקט פשוט עם currentInterest
     if (data && typeof data === 'object' && !Array.isArray(data)) {
@@ -60,18 +56,18 @@ export async function fetchInterestRates(): Promise<InterestRates> {
     const variableRate = dataArray.find((item: any) => item.InterestRateName?.includes('משתנה'));
     
     return {
-      prime: boiRate?.currentInterest +1.5 || 6,
-      fixed5Years: fixed5YearsRate?.currentInterest + 1.2  || 5.7,
-      variable: variableRate?.currentInterest -0.3 || 4.2,
+      prime: boiRate?.currentInterest + 1.5 || 6,
+      fixed5Years: fixed5YearsRate?.currentInterest + 1.2 || 5.7,
+      variable: variableRate?.currentInterest - 0.3 || 4.2,
       lastUpdated: new Date().toISOString()
     };
   } catch (error) {
     console.error('⚠️ Error fetching interest rates:', error);
     // ערכי ברירת מחדל במקרה של שגיאה
     return {
-      prime: 4.5,
-      fixed5Years: 5.2,
-      variable: 3.8,
+      prime: 6,
+      fixed5Years: 5.7,
+      variable: 4.2,
       lastUpdated: new Date().toISOString()
     };
   }

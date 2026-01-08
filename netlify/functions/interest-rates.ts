@@ -1,6 +1,6 @@
-import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
+import type { Handler } from '@netlify/functions';
 
-const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+export const handler: Handler = async () => {
   // מאפשר CORS
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -19,33 +19,42 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
   }
 
   try {
-    const response = await fetch('https://www.boi.org.il/PublicApi/GetInterest');
+    const response = await fetch('https://www.boi.org.il/PublicApi/GetInterest', {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0'
+      }
+    });
     
     if (!response.ok) {
-      throw new Error('Failed to fetch from Bank of Israel');
+      throw new Error(`BOI API returned ${response.status}`);
     }
     
     const data = await response.json();
 
     return {
       statusCode: 200,
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=3600'
+      },
       body: JSON.stringify(data)
     };
   } catch (error) {
-    console.error('❌ Error fetching interest rates:', error);
+    console.error('Error fetching from BOI:', error);
     
-    // ערכי fallback
+    // החזר ריביות ברירת מחדל במקרה של שגיאה
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify([
-        { InterestRateName: 'ריבית בנק ישראל', currentInterest: 4.5 },
-        { InterestRateName: 'קבועה 5 שנים', currentInterest: 5.2 },
-        { InterestRateName: 'משתנה', currentInterest: 3.8 }
-      ])
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        currentInterest: 4.5,
+        fallback: true
+      })
     };
   }
 };
-
-export { handler };
