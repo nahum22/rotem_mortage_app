@@ -16,10 +16,47 @@ export const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ onCalcul
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    const priceValue = parseFloat(propertyPrice);
+    const downPaymentValue = parseFloat(downPayment);
+    const incomeValue = parseFloat(monthlyIncome);
+    
+    // בדיקות תקינות
+    if (priceValue <= 0 || isNaN(priceValue)) {
+      alert('⚠️ שווי הנכס חייב להיות גדול מאפס');
+      return;
+    }
+    
+    if (downPaymentValue < 0 || isNaN(downPaymentValue)) {
+      alert('⚠️ המקדמה לא יכולה להיות שלילית');
+      return;
+    }
+    
+    if (downPaymentValue > priceValue) {
+      alert('⚠️ המקדמה לא יכולה להיות גדולה משווי הנכס');
+      return;
+    }
+    
+    if (incomeValue <= 0 || isNaN(incomeValue)) {
+      alert('⚠️ ההכנסה החודשית חייבת להיות גדולה מאפס');
+      return;
+    }
+    
+    if (priceValue < 100000) {
+      alert('⚠️ שווי הנכס נמוך מדי - מינימום 100,000 ₪');
+      return;
+    }
+    
+    if (downPaymentValue === 0) {
+      const confirmZeroDown = confirm('💡 המקדמה שלך היא 0 ₪. האם אתה בטוח שזה נכון? (הבנקים דורשים לפחות 25% הון עצמי)');
+      if (!confirmZeroDown) {
+        return;
+      }
+    }
+    
     const inputs: MortgageInputs = {
-      propertyPrice: parseFloat(propertyPrice),
-      downPayment: parseFloat(downPayment),
-      monthlyIncome: parseFloat(monthlyIncome),
+      propertyPrice: priceValue,
+      downPayment: downPaymentValue,
+      monthlyIncome: incomeValue,
       dealType,
       propertyType
     };
