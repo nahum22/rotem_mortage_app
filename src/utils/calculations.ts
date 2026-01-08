@@ -27,27 +27,46 @@ export interface MortgageResult {
  */
 export async function fetchInterestRates(): Promise<InterestRates> {
   try {
-    const response = await fetch('https://www.boi.org.il/PublicApi/GetInterest');
+    // בפרודקשן - Netlify Function, בפיתוח - Vite proxy
+    const apiUrl = import.meta.env.PROD 
+      ? '/.netlify/functions/interest-rates'
+      : '/api/interest-rates';
+    
+    const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error('Failed to fetch interest rates');
     }
     
     const data = await response.json();
     
-    // חילוץ נתוני הריבית מהתשובה של בנק ישראל
-    // התאם את השדות בהתאם למבנה האמיתי של ה-API
-    const primeRate = data.find((item: any) => item.InterestRateName === 'ריבית בנק ישראל')?.InterestRate || 4.5;
-    const fixed5Years = data.find((item: any) => item.InterestRateName?.includes('קבועה 5 שנים'))?.InterestRate || 5.2;
-    const variable = data.find((item: any) => item.InterestRateName?.includes('משתנה'))?.InterestRate || 3.8;
+    console.log('📊 Full API Response:', data);
+    console.log('📊 Type:', typeof data);
+    console.log('📊 Is Array:', Array.isArray(data));
+    
+    // אם זה אובייקט פשוט עם currentInterest
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      return {
+        prime: data.currentInterest + 1.5  || 6,
+        fixed5Years: data.currentInterest + 1.2 || 5.7,
+        variable: data.currentInterest - 0.3 || 4.2,
+        lastUpdated: new Date().toISOString()
+      };
+    }
+    
+    // אם זה מערך
+    const dataArray = Array.isArray(data) ? data : [];
+    const boiRate = dataArray.find((item: any) => item.InterestRateName === 'ריבית  פריים בנק ישראל');
+    const fixed5YearsRate = dataArray.find((item: any) => item.InterestRateName?.includes('קבועה 5 שנים'));
+    const variableRate = dataArray.find((item: any) => item.InterestRateName?.includes('משתנה'));
     
     return {
-      prime: primeRate,
-      fixed5Years: fixed5Years,
-      variable: variable,
+      prime: boiRate?.currentInterest +1.5 || 6,
+      fixed5Years: fixed5YearsRate?.currentInterest + 1.2  || 5.7,
+      variable: variableRate?.currentInterest -0.3 || 4.2,
       lastUpdated: new Date().toISOString()
     };
   } catch (error) {
-    console.error('Error fetching interest rates:', error);
+    console.error('⚠️ Error fetching interest rates:', error);
     // ערכי ברירת מחדל במקרה של שגיאה
     return {
       prime: 4.5,

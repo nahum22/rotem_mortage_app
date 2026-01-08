@@ -105,7 +105,7 @@ function App() {
               
               <div className="rates-grid">
                 <div className="rate-item">
-                  <span className="rate-label">ריבית בנק ישראל</span>
+                  <span className="rate-label">ריבית פריים בנק ישראל</span>
                   <span className="rate-value">{results.interestRates.prime?.toFixed(2) ?? '0.00'}%</span>
                 </div>
                 
