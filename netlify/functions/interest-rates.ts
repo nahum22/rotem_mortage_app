@@ -1,6 +1,6 @@
 import type { Handler } from '@netlify/functions';
 
-export const handler: Handler = async () => {
+export const handler: Handler = async (event) => {
   // מאפשר CORS
   const headers = {
     'Access-Control-Allow-Origin': '*',

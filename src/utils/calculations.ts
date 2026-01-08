@@ -27,8 +27,8 @@ export interface MortgageResult {
  */
 export async function fetchInterestRates(): Promise<InterestRates> {
   try {
-    // קריאה ישירה ל-API של בנק ישראל
-    const response = await fetch('https://www.boi.org.il/PublicApi/GetInterest');
+    // קריאה דרך Netlify proxy כדי לעקוף CORS
+    const response = await fetch('/api/interest-rates');
     
     if (!response.ok) {
       throw new Error('Failed to fetch interest rates');
