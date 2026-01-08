@@ -49,7 +49,8 @@ export const handler: Handler = async (event) => {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=3600'
       },
       body: JSON.stringify({
         currentInterest: 4.5,
